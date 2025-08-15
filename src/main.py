@@ -1,163 +1,163 @@
-import tkinter as tk
-from tkinter import ttk, messagebox, filedialog
+import customtkinter as ctk
 from calculadora import Calculadora
+from tkinter import messagebox, filedialog
 
-class CalculadoraGUI:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Calculadora Avanzada")
-        self.root.geometry("500x650")
-        self.root.configure(bg="#121212")
-        self.root.resizable(False, False)
+ctk.set_appearance_mode("dark")  # modo oscuro inicial
+ctk.set_default_color_theme("blue")  # tema azul
 
+class CalculadoraProfesional:
+    def __init__(self):
         self.calc = Calculadora()
         self.expresion = ""
         self.historial = []
         self.memoria = 0.0
 
-        self._crear_estilo()
+        # Ventana principal
+        self.root = ctk.CTk()
+        self.root.title("Calculadora Avanzada Profesional")
+        self.root.geometry("450x650")
+        self.root.resizable(False, False)
+
         self._crear_pantalla()
         self._crear_botones()
         self._crear_historial()
         self._crear_botones_historial()
+        self._crear_modo_oscuro()
 
-        # Atajos de teclado
-        self.root.bind("<Return>", lambda e: self.calcular())
-        self.root.bind("<BackSpace>", lambda e: self.borrar_ultimo())
+        self.root.mainloop()
 
-    def _crear_estilo(self):
-        style = ttk.Style()
-        style.theme_use("clam")
-        style.configure("TButton",
-                        font=("Arial", 14),
-                        padding=10,
-                        foreground="#ffffff",
-                        background="#333333")
-        style.map("TButton",
-                  background=[("active", "#444444")])
-
+    # Pantalla principal
     def _crear_pantalla(self):
-        self.display = tk.Entry(self.root, font=("Arial", 24), justify="right", bd=5,
-                                bg="#1e1e1e", fg="#ffffff", insertbackground="white")
+        self.display = ctk.CTkEntry(self.root, font=("Arial", 24), justify="right")
         self.display.pack(fill="x", padx=10, pady=10)
 
+    # Botones de la calculadora
     def _crear_botones(self):
-        frame = tk.Frame(self.root, bg="#121212")
-        frame.pack(pady=10)
+        frame = ctk.CTkFrame(self.root)
+        frame.pack(padx=10, pady=5, fill="both", expand=True)
 
-        botones = [
-            ("7", 0, 0), ("8", 0, 1), ("9", 0, 2), ("/", 0, 3),
-            ("4", 1, 0), ("5", 1, 1), ("6", 1, 2), ("*", 1, 3),
-            ("1", 2, 0), ("2", 2, 1), ("3", 2, 2), ("-", 2, 3),
-            ("0", 3, 0), (".", 3, 1), ("^", 3, 2), ("+", 3, 3),
-            ("sin", 4, 0), ("cos", 4, 1), ("tan", 4, 2), ("√", 4, 3),
-            ("log", 5, 0), ("C", 5, 1), ("=", 5, 2), ("Salir", 5, 3),
-            ("M+", 6, 0), ("M-", 6, 1), ("MR", 6, 2)
+        # Números
+        numeros = [
+            ("7", 0, 0), ("8", 0, 1), ("9", 0, 2),
+            ("4", 1, 0), ("5", 1, 1), ("6", 1, 2),
+            ("1", 2, 0), ("2", 2, 1), ("3", 2, 2),
+            ("0", 3, 0), (".", 3, 1)
         ]
+        for (num, r, c) in numeros:
+            ctk.CTkButton(frame, text=num, command=lambda n=num: self._click(n),
+                          height=50, width=50).grid(row=r, column=c, padx=5, pady=5)
 
-        for (texto, fila, col) in botones:
-            boton = ttk.Button(frame, text=texto,
-                               command=lambda t=texto: self._click_boton(t))
-            boton.grid(row=fila, column=col, padx=5, pady=5, ipadx=10, ipady=10)
+        # Operaciones básicas
+        operaciones = [
+            ("+", 0, 3, "#4CAF50"), ("-", 1, 3, "#F44336"),
+            ("*", 2, 3, "#2196F3"), ("/", 3, 3, "#FF9800"),
+            ("=", 3, 2, "#9C27B0"), ("C", 3, 4, "#607D8B")
+        ]
+        for (op, r, c, color) in operaciones:
+            ctk.CTkButton(frame, text=op, fg_color=color,
+                          command=lambda o=op: self._click(o),
+                          height=50, width=50).grid(row=r, column=c, padx=5, pady=5)
 
+        # Funciones avanzadas
+        funciones = [("sin", 4, 0), ("cos", 4, 1), ("tan", 4, 2), ("√", 4, 3), ("log", 5, 0)]
+        for (f, r, c) in funciones:
+            ctk.CTkButton(frame, text=f, command=lambda func=f: self._click(func),
+                          height=50, width=50).grid(row=r, column=c, padx=5, pady=5)
+
+        # Botones de memoria
+        memoria = [("M+", 5, 1), ("M-", 5, 2), ("MR", 5, 3)]
+        for (m, r, c) in memoria:
+            ctk.CTkButton(frame, text=m, command=lambda mem=m: self._click(mem),
+                          height=50, width=50).grid(row=r, column=c, padx=5, pady=5)
+
+    # Historial con scroll
     def _crear_historial(self):
-        historial_frame = tk.Frame(self.root, bg="#1e1e1e")
-        historial_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        self.historial_text = ctk.CTkTextbox(self.root, height=100)
+        self.historial_text.pack(fill="both", padx=10, pady=5)
 
-        tk.Label(historial_frame, text="Historial", font=("Arial", 14),
-                 bg="#1e1e1e", fg="white").pack(anchor="w")
-
-        self.historial_text = tk.Text(historial_frame, height=8, bg="#1e1e1e",
-                                      fg="white", font=("Arial", 12), state="disabled")
-        self.historial_text.pack(fill="both", expand=True)
-
+    # Botones de historial
     def _crear_botones_historial(self):
-        frame = tk.Frame(self.root, bg="#121212")
+        frame = ctk.CTkFrame(self.root)
         frame.pack(pady=5)
 
-        borrar_btn = ttk.Button(frame, text="Borrar Historial",
-                                command=self._borrar_historial)
-        borrar_btn.grid(row=0, column=0, padx=10, pady=5)
+        ctk.CTkButton(frame, text="Borrar Historial", command=self._borrar_historial,
+                      width=150).grid(row=0, column=0, padx=10)
+        ctk.CTkButton(frame, text="Exportar Historial", command=self._exportar_historial,
+                      width=150).grid(row=0, column=1, padx=10)
 
-        exportar_btn = ttk.Button(frame, text="Exportar Historial",
-                                  command=self._exportar_historial)
-        exportar_btn.grid(row=0, column=1, padx=10, pady=5)
+    # Botón para alternar modo oscuro/claro
+    def _crear_modo_oscuro(self):
+        ctk.CTkButton(self.root, text="Modo Claro/Oscuro",
+                      command=self._toggle_modo, width=200).pack(pady=5)
 
-    def _click_boton(self, valor):
+    # Alternar modo
+    def _toggle_modo(self):
+        current = ctk.get_appearance_mode()
+        ctk.set_appearance_mode("light" if current=="dark" else "dark")
+
+    # Lógica de botones
+    def _click(self, valor):
         if valor == "C":
             self.expresion = ""
-            self.display.delete(0, tk.END)
+            self.display.delete(0, "end")
         elif valor == "=":
-            self.calcular()
-        elif valor == "Salir":
-            self.root.quit()
-        elif valor == "M+":
-            try:
-                self.memoria += float(self.display.get())
-            except:
-                pass
-        elif valor == "M-":
-            try:
-                self.memoria -= float(self.display.get())
-            except:
-                pass
-        elif valor == "MR":
-            self.display.delete(0, tk.END)
-            self.display.insert(tk.END, str(self.memoria))
-            self.expresion = str(self.memoria)
+            self._calcular()
+        elif valor in ["M+", "M-", "MR"]:
+            self._gestionar_memoria(valor)
         else:
             self.expresion += valor
-            self.display.delete(0, tk.END)
-            self.display.insert(tk.END, self.expresion)
+            self.display.delete(0, "end")
+            self.display.insert(0, self.expresion)
 
-    def borrar_ultimo(self):
-        self.expresion = self.expresion[:-1]
-        self.display.delete(0, tk.END)
-        self.display.insert(tk.END, self.expresion)
+    # Memoria
+    def _gestionar_memoria(self, valor):
+        try:
+            if valor == "M+":
+                self.memoria += float(self.display.get())
+            elif valor == "M-":
+                self.memoria -= float(self.display.get())
+            elif valor == "MR":
+                self.display.delete(0, "end")
+                self.display.insert(0, str(self.memoria))
+                self.expresion = str(self.memoria)
+        except:
+            pass
 
-    def calcular(self):
+    # Calcular
+    def _calcular(self):
         try:
             if "sin" in self.expresion:
                 num = float(self.expresion.replace("sin", ""))
-                resultado = self.calc.seno(num)
+                res = self.calc.seno(num)
             elif "cos" in self.expresion:
                 num = float(self.expresion.replace("cos", ""))
-                resultado = self.calc.coseno(num)
+                res = self.calc.coseno(num)
             elif "tan" in self.expresion:
                 num = float(self.expresion.replace("tan", ""))
-                resultado = self.calc.tangente(num)
+                res = self.calc.tangente(num)
             elif "√" in self.expresion:
                 num = float(self.expresion.replace("√", ""))
-                resultado = self.calc.raiz_cuadrada(num)
+                res = self.calc.raiz_cuadrada(num)
             elif "log" in self.expresion:
                 num = float(self.expresion.replace("log", ""))
-                resultado = self.calc.logaritmo(num)
-            elif "^" in self.expresion:
-                a, b = map(float, self.expresion.split("^"))
-                resultado = self.calc.potencia(a, b)
+                res = self.calc.logaritmo(num)
             else:
-                resultado = eval(self.expresion)
+                res = eval(self.expresion)
 
-            self._mostrar_resultado(resultado)
-
-        except Exception:
+            self.display.delete(0, "end")
+            self.display.insert(0, str(round(res, 6)))
+            self.historial.append(f"{self.expresion} = {res}")
+            self._actualizar_historial()
+            self.expresion = str(res)
+        except:
             messagebox.showerror("Error", "Expresión inválida")
             self.expresion = ""
-            self.display.delete(0, tk.END)
-
-    def _mostrar_resultado(self, resultado):
-        self.display.delete(0, tk.END)
-        self.display.insert(tk.END, str(round(resultado, 6)))
-        self.historial.append(f"{self.expresion} = {resultado}")
-        self._actualizar_historial()
-        self.expresion = str(resultado)
+            self.display.delete(0, "end")
 
     def _actualizar_historial(self):
-        self.historial_text.config(state="normal")
-        self.historial_text.delete("1.0", tk.END)
+        self.historial_text.delete("1.0", "end")
         for linea in self.historial[-10:]:
-            self.historial_text.insert(tk.END, linea + "\n")
-        self.historial_text.config(state="disabled")
+            self.historial_text.insert("end", linea + "\n")
 
     def _borrar_historial(self):
         if messagebox.askyesno("Confirmar", "¿Deseas borrar el historial?"):
@@ -168,7 +168,6 @@ class CalculadoraGUI:
         if not self.historial:
             messagebox.showinfo("Información", "No hay historial para exportar.")
             return
-
         archivo = filedialog.asksaveasfilename(defaultextension=".txt",
                                                filetypes=[("Archivo de texto", "*.txt")])
         if archivo:
@@ -180,7 +179,6 @@ class CalculadoraGUI:
             except Exception as e:
                 messagebox.showerror("Error", f"No se pudo exportar: {e}")
 
+
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = CalculadoraGUI(root)
-    root.mainloop()
+    CalculadoraProfesional()
