@@ -339,50 +339,8 @@ python -m unittest test.test_calculadora.TestCalculadora.test_operaciones_basica
 
 ---
 
-## 📝 **Changelog**
-
-### **v2.0.0** - Optimizaciones de Rendimiento
-- ⚡ **Carga ultra-rápida** (< 1 segundo)
-- 🔄 **Carga progresiva** de elementos
-- 🧵 **Threading** para operaciones pesadas
-- 🎯 **Debouncing** en redimensionamiento
-- 🛡️ **Verificaciones de seguridad**
-
-### **v1.5.0** - Interfaz Profesional
-- 🎨 **Diseño moderno** con CustomTkinter
-- 🌙 **Tema oscuro/claro** intercambiable
-- 📱 **Responsive design** completo
-- 🧮 **Modo científico** expandido
-- 💾 **Gestión de memoria** avanzada
-
-### **v1.0.0** - Funcionalidad Básica
-- 🧮 **Operaciones matemáticas** básicas
-- 📋 **Historial** de cálculos
-- ⚙️ **Configuración** persistente
-- 🧪 **Tests unitarios** completos
-
----
-
 ## 📄 **Licencia**
 
 Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
-
----
-
-## 🙏 **Agradecimientos**
-
-- **CustomTkinter** por la interfaz moderna
-- **Python** por el lenguaje robusto
-- **Comunidad** por las contribuciones
-
----
-
-## 📞 **Soporte**
-
-- **Issues**: [GitHub Issues](https://github.com/tu-usuario/Calculadora-Avanzada/issues)
-- **Documentación**: [Wiki](https://github.com/tu-usuario/Calculadora-Avanzada/wiki)
-- **Email**: tu-email@ejemplo.com
-
----
 
 *¡Disfruta de una experiencia de calculadora profesional con carga ultra-rápida! ⚡🧮✨*
