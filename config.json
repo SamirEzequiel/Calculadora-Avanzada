@@ -1,0 +1,12 @@
+{
+    "tema": "dark",
+    "color_tema": "blue",
+    "tamaño_ventana": "450x650",
+    "decimales": 6,
+    "historial_maximo": 100,
+    "memorias": {
+        "M1": 0.0,
+        "M2": 0.0,
+        "M3": 0.0
+    }
+}
